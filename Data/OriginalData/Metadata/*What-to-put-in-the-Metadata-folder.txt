@@ -1,0 +1,3 @@
+The Metadata folder should include
+
+* The Metadata Guide (MetadataGuide.pdf) and existing metadata documents (if available)
