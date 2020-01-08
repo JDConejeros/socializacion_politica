@@ -11,7 +11,7 @@ Se utilizan las siguientes fuentes de datos:
 
 # Repositorio 
 
-La estructura de este repositorio se basa en el protocolo de documentación **TIER versión 4.0**. Este protocolo elaborado  enfatiza en la construcción de documentos y un flujo de trabajo de fácil replicación, más información puede consultar la documentación del protocolo en el siguiente [link](https://www.projecttier.org/tier-protocol/specifications/#overview-of-the-documentation). 
+La estructura de este repositorio se basa en el protocolo de documentación **TIER (Teaching Integrity in Empirical Research) versión 4.0**. Este protocolo enfatiza en la construcción de directorios, documentos y un flujo de trabajo de fácil replicación. Más información puede consultar la documentación del protocolo en el siguiente [link](https://www.projecttier.org/tier-protocol/specifications/#overview-of-the-documentation). 
 
 # Referencia 
 
