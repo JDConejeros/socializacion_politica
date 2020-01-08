@@ -1,0 +1,18 @@
+---
+title: "Procesamiento bases de datos"
+author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
+date: '`r format(Sys.time(), "%d/%m/%Y")`'
+output: 
+  html_document:
+    theme: cosmo
+    highlight: tango
+    code_folding: hide
+    toc: yes
+    toc_float: true
+---
+
+En el siguiente documento se procesan las principales variables de las dos fuentes de información utilizadas: 
+
++ Estudio de formación ciudadana. Agencia de calidad de la educación, Chile 2017.
+
++ Estudio de formación ciudadana. SIMCE, Chile 2017.

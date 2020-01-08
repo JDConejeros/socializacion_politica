@@ -1,8 +1,0 @@
-The Output folder should include
-
-* Log files, graphics files, text files, etc., that capture the output of the commands in the analysis scripts that generate results reported in the paper. It may be convenient to organize the output files in subfolders. For example, 
-
-DescriptiveStatistics/ 
-Regressions/ 
-Simulations/ 
-OutputForDataAppendix/

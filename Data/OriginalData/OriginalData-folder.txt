@@ -1,0 +1,3 @@
+The OriginalData folder should include
+
+* One or more original data files (possibly organized in subfolders)
