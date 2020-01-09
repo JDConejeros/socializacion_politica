@@ -1,0 +1,14 @@
+---
+title: "Análisis bases de datos"
+author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
+date: '`r format(Sys.time(), "%d/%m/%Y")`'
+output: 
+  html_document:
+    theme: cosmo
+    highlight: tango
+    code_folding: hide
+    toc: yes
+    toc_float: true
+---
+
+A continuación se realizan los análisis respectivo a los datos cruzados del estudio de formación ciudadana y los cuestionarios del SIMCE año 2017. Se presentan análisis descriptivos, correlaciones y modelamiento estadístico. 

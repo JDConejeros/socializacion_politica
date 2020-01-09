@@ -1,0 +1,129 @@
+---
+title: "Procesamiento bases de datos"
+author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
+date: '`r format(Sys.time(), "%d/%m/%Y")`'
+output: 
+  html_document:
+    theme: cosmo
+    highlight: tango
+    code_folding: hide
+    toc: yes
+    toc_float: true
+---
+
+En el siguiente documento se procesan las principales variables de las dos fuentes de información utilizadas: 
+
+**Estudio de formación ciudadana. Agencia de calidad de la educación, Chile 2017.**
+
+**Estudio de formación ciudadana. SIMCE, Chile 2017.**
+
++ Opciones generales 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+rm(list = ls()) #limpiar la memoria
+#Desactivar notación científica
+options(scipen=999)
+#Paquetes
+library(knitr)
+library(rmdformats)
+library(dplyr)
+library(haven)
+library(xtable) 
+library(psych)
+library(PerformanceAnalytics)
+library(purrr)
+library(tidyr)
+library(skimr)
+library(sjmisc)
+library(stargazer)
+library(ggpubr)
+
+#Global
+options(max.print = "500")
+opts_chunk$set(echo = FALSE,
+	             cache = FALSE,
+               prompt = FALSE,       
+               tidy = FALSE,
+               comment = NA,
+               message = FALSE,
+               warning = FALSE)
+opts_knit$set(width = 500)
+options(max.print=1000000)
+```
+
++ Lectura de bases de datos
+
+**Base de datos estudio de formación ciudadana** 
+
+```{r, echo=TRUE, eval=TRUE}
+#Abrir bases de datos
+bbdd_puntajes <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Agencia2017/alumnosFc_mrun.dta")
+bbdd_alumnos <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Agencia2017/cuestAlumnos.dta")
+bbdd_padres <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Agencia2017/cuestPadres.dta")
+
+#Transformamos nuestras bases a un data frame
+bbdd_puntajes <- as.data.frame(bbdd_puntajes)
+names(bbdd_puntajes) <- tolower(names(bbdd_puntajes)) 
+bbdd_alumnos <- as.data.frame(bbdd_alumnos)
+names(bbdd_alumnos) <- tolower(names(bbdd_alumnos)) 
+bbdd_padres <- as.data.frame(bbdd_padres)
+names(bbdd_padres) <- tolower(names(bbdd_padres)) 
+
+```
+
+**Simce 2017 (Octavo básico): información de los puntajes y cuestionario de padres**
+
+```{r, echo=TRUE, eval=TRUE}
+#Puntaje SIMCE
+simce_ptje <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Simce2017/simce8b2017_alu_mrun_final_SEG.dta")
+simce_ptje <- as.data.frame(simce_ptje)
+
+#Cuestionario estudiantes (formularios a y b)
+simce_cestfa <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Simce2017/simce8b2017_cestfa_final_SEG.dta")
+simce_cestfa <- as.data.frame(simce_cestfa)
+
+simce_cestfb <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Simce2017/simce8b2017_cestfb_final_SEG.dta")
+simce_cestfb <- as.data.frame(simce_cestfb)
+
+#Cuestionario padres 
+simce_cpad <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Simce2017/simce8b2017_cpad_final_SEG.dta")
+simce_cpad <- as.data.frame(simce_cpad)
+
+#Información colegio
+simce_rbd <- read_dta("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/OriginalData/Simce2017/simce8b2017_rbd_final.dta")
+simce_rbd <- as.data.frame(simce_rbd)
+```
+
++ Merge de las bases de datos 
+
+Unión con la información del SIMCE y la base de datos de estudiantes.
+
+**Pendiente**: Construcción de ponderador en base a la probabilidad de respuesta a la prueba de conocimiento (listo en la base de datos) y que los padres sean entrevistadosn (construir)
+
+```{r, echo=TRUE, eval=TRUE}
+#SIMCE: Puntaje estudiantes + información de la escuela
+merge_simce <- merge(simce_ptje, simce_rbd[, c("rbd","cod_reg_rbd", "nom_reg_rbd", "cod_com_rbd", "nom_com_rbd", "cod_depe1", "cod_depe2", "cod_grupo", "prom_lect8b_rbd", "prom_mate8b_rbd")], by="rbd")
+
+#SIMCE: Puntaje estudiantes + Cuestionario Padres
+merge_simce <- merge(merge_simce, simce_cpad[, c("idalumno", "cpad_p01", "cpad_p02", "cpad_p03", "cpad_p06", "cpad_p07","cpad_p05", "cpad_p10")], by="idalumno")
+
+#Guardamos la base de datos
+save(merge_simce, file = "/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/Simce_modificada2017.Rdata")
+
+#Conocimento cívico + SIMCE
+#Eliminar los casos sin información, revisar que los datos sean consistentes entre bases de datos (género)
+merge_civic_simce <- merge(bbdd_puntajes, merge_simce[, c("mrun", "rbd", "cod_curso", "gen_alu", "ptje_mate8b_alu", "ptje_lect8b_alu", "cod_reg_rbd", "nom_reg_rbd", "cod_com_rbd", "nom_com_rbd", "cod_depe1", "cod_depe2", "cod_grupo", "prom_lect8b_rbd", "prom_mate8b_rbd", "cpad_p01", "cpad_p02", "cpad_p03", "cpad_p06", "cpad_p07","cpad_p05", "cpad_p10")], by="mrun")
+
+#Conocimiento Civico + Cuestionario estudiantes 
+merge_civic_simce <- merge(merge_civic_simce, bbdd_alumnos[, c(1, 42:52, 121:140, 181:202)], by="idalumno")
+
+#Guardamos la base de datos
+save(merge_civic_simce, file = "/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/merge_civic_simce.Rdata")
+
+#Conocimiento Civico + Cuestionario padres: total 6000 observaciones
+merge_civic_simce <- merge(merge_civic_simce, bbdd_padres[, c(1, 59, 28:37, 89:101, 77:83, 60:76, 6, 5, 26, 12:21, 27)], by="idalumno")
+
+#Guardamos la base de datos
+save(merge_civic_simce, file = "/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/civic_simce_analysis.Rdata")
+```
+
