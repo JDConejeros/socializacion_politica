@@ -1,6 +1,6 @@
 ---
 title: "Procesamiento variables de la base de dato"
-author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
+author: "Daniel Miranda, Juan Carlos Castillo & José Conejeros"
 date: '`r format(Sys.time(), "%d/%m/%Y")`'
 output: 
   html_document:
@@ -57,7 +57,7 @@ options(max.print=1000000)
 
 ```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
 #Cargamos base de datos
-load("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/civic_simce_analysis.Rdata")
+load("~/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/civic_simce_analysis.Rdata")
 #View(merge_civic_simce)
 #dim(merge_civic_simce)
 ```
@@ -71,11 +71,11 @@ Se consideran las siguientes variables: identificadores de alumno, colegio y cur
 ###################################################
 # Género #
 ###################################################
-## Estudio formación ciudadana
+##Estudio formación ciudadana
 merge_civic_simce$sexo <- rec(merge_civic_simce$sexo, rec="M=1; F=0")
 merge_civic_simce$sexo <-factor(merge_civic_simce$sexo, levels = c(0,1), labels = c("Mujer", "Hombre"))
 
-## SIMCE
+##SIMCE
 merge_civic_simce$sexo2 <- rec(merge_civic_simce$gen_alu, rec="Hombres=1; Mujeres=0")
 merge_civic_simce$sexo2 <-factor(merge_civic_simce$sexo2, levels = c(0,1), labels = c("Mujer", "Hombre"))
 
@@ -141,12 +141,12 @@ merge_civic_simce$ptje_lect8b_alucz <- scale(merge_civic_simce$ptje_lect8b_alu)
 ###################################################
 #¿Cuánto te interesas por temas políticas y sociales? 1. Nada, 2. Poco, 3. Bastante, 4. Mucho
 #Continua
-merge_civic_simce$int_politico <- as.numeric(merge_civic_simce$alp16)
+merge_civic_simce$pol_estud <- as.numeric(merge_civic_simce$alp16)
 #Categórica ordinal 
-merge_civic_simce$int_politico_cat <-factor(merge_civic_simce$int_politico, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
+merge_civic_simce$pol_estud_cat <-factor(merge_civic_simce$pol_estud, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
 #Dummy
-merge_civic_simce$int_politico_dum <- rec(merge_civic_simce$int_politico, rec="1=0; 2=1; 3=1; 4=1")
-merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, levels = c(0,1), labels = c("No", "Si"))
+merge_civic_simce$pol_estud_dum <- rec(merge_civic_simce$pol_estud, rec="1=0; 2=1; 3=1; 4=1")
+merge_civic_simce$pol_estud_dum <-factor(merge_civic_simce$pol_estud_dum, levels = c(0,1), labels = c("No", "Si"))
 
 ###################################################
 # Autoeficacia #
@@ -157,13 +157,6 @@ merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, 
 ###################################################
 # Ideas autoritarias #
 ###################################################
-#Continua
-merge_civic_simce$int_politico <- as.numeric(merge_civic_simce$alp16)
-#Categórica ordinal 
-merge_civic_simce$int_politico_cat <-factor(merge_civic_simce$int_politico, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
-#Dummy
-merge_civic_simce$int_politico_dum <- rec(merge_civic_simce$int_politico, rec="1=0; 2=1; 3=1; 4=1")
-merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, levels = c(0,1), labels = c("No", "Si"))
 
 
 ###################################################
@@ -185,16 +178,6 @@ merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, 
 
 
 ```
-
-
-```{r}
-table <- merge_civic_simce %>% 
-  group_by(merge_civic_simce$int_politico_dum) %>% 
-  summarize(n=n()) %>% 
-  mutate(prop=n/sum(n)*100)
-
-```
-
 
 ## Variables para los padres: 
 
