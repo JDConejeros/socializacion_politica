@@ -12,3 +12,58 @@ output:
 ---
 
 A continuación se realizan los análisis respectivo a los datos cruzados del estudio de formación ciudadana y los cuestionarios del SIMCE año 2017. Se presentan análisis descriptivos, correlaciones y modelamiento estadístico. 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+rm(list = ls()) #limpiar la memoria
+#Desactivar notación científica
+options(scipen=999)
+#Paquetes
+library(knitr)
+library(rmdformats)
+library(DT)
+library(dplyr)
+library(haven)
+library(texreg) 
+library(xtable) 
+library(kableExtra) 
+library(ggplot2)
+library(shiny)
+library(psych)
+library(PerformanceAnalytics)
+library(purrr)
+library(tidyr)
+library(vcd)
+library(vcdExtra)
+library(skimr)
+library(sjmisc)
+library(stargazer)
+library(sjPlot)
+library(ggpubr)
+
+#Global
+options(max.print = "500")
+opts_chunk$set(echo = FALSE,
+	             cache = FALSE,
+               prompt = FALSE,       
+               tidy = FALSE,
+               comment = NA,
+               message = FALSE,
+               warning = FALSE)
+opts_knit$set(width = 500)
+options(max.print=1000000)
+```
+
++ Cargamos la base de datos 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+# 6 Observaciones, 145 variables 
+load("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/civic_simce_analysis.Rdata")
+View(merge_civic_simce)
+```
+
++ Análisis Descriptivos 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+
+```
+

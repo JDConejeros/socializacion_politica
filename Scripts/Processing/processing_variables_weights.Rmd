@@ -1,0 +1,222 @@
+---
+title: "Procesamiento variables de la base de dato"
+author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
+date: '`r format(Sys.time(), "%d/%m/%Y")`'
+output: 
+  html_document:
+    theme: cosmo
+    highlight: tango
+    code_folding: hide
+    toc: yes
+    toc_float: true
+---
+
+El siguiente código corresponde al procesamiento de las variables en la base de datos y pre-análisis.
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+rm(list = ls()) #limpiar la memoria
+#Desactivar notación científica
+options(scipen=999)
+#Paquetes
+library(knitr)
+library(rmdformats)
+library(DT)
+library(dplyr)
+library(haven)
+library(texreg) 
+library(xtable) 
+library(kableExtra) 
+library(ggplot2)
+library(shiny)
+library(psych)
+library(PerformanceAnalytics)
+library(purrr)
+library(tidyr)
+library(vcd)
+library(vcdExtra)
+library(skimr)
+library(sjmisc)
+library(stargazer)
+library(sjPlot)
+library(ggpubr)
+
+#Global
+options(max.print = "500")
+opts_chunk$set(echo = FALSE,
+	             cache = FALSE,
+               prompt = FALSE,       
+               tidy = FALSE,
+               comment = NA,
+               message = FALSE,
+               warning = FALSE)
+opts_knit$set(width = 500)
+options(max.print=1000000)
+```
+
+## Base de datos de trabajo
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+#Cargamos base de datos
+load("/Users/josedanielconejeros/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescentes/Data/IntermediateData/civic_simce_analysis.Rdata")
+#View(merge_civic_simce)
+#dim(merge_civic_simce)
+```
+
+## Variables para los estudiantes
+
+Se consideran las siguientes variables: identificadores de alumno, colegio y curso,  género, puntaje en la prueba de formación ciudadana, puntaje SIMCE en lenguaje y matemáticas, ponderadores, interés político, ideas autoritarias, valoración de la democracia, confianza en las instituciones y atributos del buen ciudadno. 
+
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+###################################################
+# Género #
+###################################################
+## Estudio formación ciudadana
+merge_civic_simce$sexo <- rec(merge_civic_simce$sexo, rec="M=1; F=0")
+merge_civic_simce$sexo <-factor(merge_civic_simce$sexo, levels = c(0,1), labels = c("Mujer", "Hombre"))
+
+## SIMCE
+merge_civic_simce$sexo2 <- rec(merge_civic_simce$gen_alu, rec="Hombres=1; Mujeres=0")
+merge_civic_simce$sexo2 <-factor(merge_civic_simce$sexo2, levels = c(0,1), labels = c("Mujer", "Hombre"))
+
+table(merge_civic_simce$sexo, merge_civic_simce$sexo2) #Inconsistencias, se opta por conservar los datos de SIMCE. 
+
+###################################################
+# Puntaje en la prueba de conocimiento categórico #
+###################################################
+#Continuo
+merge_civic_simce$puntaje<- as.numeric(merge_civic_simce$puntaje)
+#Categórico
+merge_civic_simce$puntajec <- merge_civic_simce$puntaje
+#25% inferior de la distribución
+merge_civic_simce$puntajec[merge_civic_simce$puntaje<=411.1] <- 1 
+#50% restante
+merge_civic_simce$puntajec[merge_civic_simce$puntaje>411.1 & merge_civic_simce$puntajec<555.1] <- 2 
+#25% superior de la distribución
+merge_civic_simce$puntajec[merge_civic_simce$puntaje>=555.1] <- 3 
+#Factor
+merge_civic_simce$puntajec <-factor(merge_civic_simce$puntajec, levels = c(1,2,3), labels = c("25% inferior", "50%", "25% superior")) 
+#Puntaje z
+merge_civic_simce$puntajez <- scale(merge_civic_simce$puntaje)
+
+###################################################
+# Puntaje SIMCE matemáticas #
+###################################################
+#Continuo
+merge_civic_simce$ptje_mate8b_alu <- as.numeric(merge_civic_simce$ptje_mate8b_alu)
+#Categórico
+merge_civic_simce$ptje_mate8b_aluc <- merge_civic_simce$ptje_mate8b_alu
+#25% inferior de la distribución
+merge_civic_simce$ptje_mate8b_aluc[merge_civic_simce$ptje_mate8b_aluc<=227.2] <- 1 
+merge_civic_simce$ptje_mate8b_aluc[merge_civic_simce$ptje_mate8b_aluc> 227.2 & 
+#50% restante                                     
+merge_civic_simce$ptje_mate8b_aluc<296.0] <- 2 
+#25% superior de la distribución
+merge_civic_simce$ptje_mate8b_aluc[merge_civic_simce$ptje_mate8b_aluc>=296.0] <- 3  
+#Factor
+merge_civic_simce$ptje_mate8b_aluc <-factor(merge_civic_simce$ptje_mate8b_aluc, levels = c(1,2,3), labels = c("25% inferior", "50%", "25% superior")) 
+#Puntaje z
+merge_civic_simce$ptje_mate8b_aluz <- scale(merge_civic_simce$ptje_mate8b_alu)
+
+###################################################
+# Puntaje SIMCE lenguaje #
+###################################################
+#Continuo
+merge_civic_simce$ptje_lect8b_alu <- as.numeric(merge_civic_simce$ptje_lect8b_alu)
+#Categórico 
+merge_civic_simce$ptje_lect8b_aluc <- merge_civic_simce$ptje_lect8b_alu
+#25% inferior de la distribución
+merge_civic_simce$ptje_lect8b_aluc[merge_civic_simce$ptje_lect8b_aluc<=212.8] <- 1 
+#50% restante
+merge_civic_simce$ptje_lect8b_aluc[merge_civic_simce$ptje_lect8b_aluc> 212.8 & merge_civic_simce$ptje_lect8b_aluc<282.7] <- 2 
+#25% superior de la distribución
+merge_civic_simce$ptje_lect8b_aluc[merge_civic_simce$ptje_lect8b_aluc>=282.7] <- 3 
+#Factor
+merge_civic_simce$ptje_lect8b_aluc <-factor(merge_civic_simce$ptje_lect8b_aluc, levels = c(1,2,3), labels = c("25% inferior", "50%", "25% superior")) 
+#Puntaje z
+merge_civic_simce$ptje_lect8b_alucz <- scale(merge_civic_simce$ptje_lect8b_alu)
+
+###################################################
+# Interés Político #
+###################################################
+#¿Cuánto te interesas por temas políticas y sociales? 1. Nada, 2. Poco, 3. Bastante, 4. Mucho
+#Continua
+merge_civic_simce$int_politico <- as.numeric(merge_civic_simce$alp16)
+#Categórica ordinal 
+merge_civic_simce$int_politico_cat <-factor(merge_civic_simce$int_politico, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
+#Dummy
+merge_civic_simce$int_politico_dum <- rec(merge_civic_simce$int_politico, rec="1=0; 2=1; 3=1; 4=1")
+merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, levels = c(0,1), labels = c("No", "Si"))
+
+###################################################
+# Autoeficacia #
+###################################################
+
+
+
+###################################################
+# Ideas autoritarias #
+###################################################
+#Continua
+merge_civic_simce$int_politico <- as.numeric(merge_civic_simce$alp16)
+#Categórica ordinal 
+merge_civic_simce$int_politico_cat <-factor(merge_civic_simce$int_politico, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
+#Dummy
+merge_civic_simce$int_politico_dum <- rec(merge_civic_simce$int_politico, rec="1=0; 2=1; 3=1; 4=1")
+merge_civic_simce$int_politico_dum <-factor(merge_civic_simce$int_politico_dum, levels = c(0,1), labels = c("No", "Si"))
+
+
+###################################################
+# Valoración de la democracia #
+###################################################
+
+
+
+###################################################
+# Confianza en las instituciones #
+###################################################
+
+
+
+###################################################
+# Atributos del buen ciudadano #
+###################################################
+
+
+
+```
+
+
+```{r}
+table <- merge_civic_simce %>% 
+  group_by(merge_civic_simce$int_politico_dum) %>% 
+  summarize(n=n()) %>% 
+  mutate(prop=n/sum(n)*100)
+
+```
+
+
+## Variables para los padres: 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+
+
+
+```
+
+## Variables escuela 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+
+
+
+```
+
+## Ponderadores por no respuesta 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+
+
+
+```
+

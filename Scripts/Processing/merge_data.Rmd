@@ -1,5 +1,5 @@
 ---
-title: "Procesamiento bases de datos"
+title: "Merge bases de datos"
 author: "Daniel Miranda, Juan Carlos Castillo, Catalina Miranda & José Conejeros"
 date: '`r format(Sys.time(), "%d/%m/%Y")`'
 output: 
