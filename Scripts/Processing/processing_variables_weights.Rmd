@@ -62,10 +62,9 @@ load("~/Dropbox/Fondecyt 2019-2021(AsistenteJC)/socializacion_politica_adolescen
 #dim(merge_civic_simce)
 ```
 
-## Variables para los estudiantes
+## Puntajes Estudiantes (Formación ciudadana y SIMCE)
 
-Se consideran las siguientes variables: identificadores de alumno, colegio y curso,  género, puntaje en la prueba de formación ciudadana, puntaje SIMCE en lenguaje y matemáticas, ponderadores, interés político, ideas autoritarias, valoración de la democracia, confianza en las instituciones y atributos del buen ciudadno. 
-
+Identificadores de alumno, colegio y curso,  género, puntaje en la prueba de formación ciudadana, puntaje SIMCE en lenguaje y matemáticas.
 
 ```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
 ###################################################
@@ -73,19 +72,19 @@ Se consideran las siguientes variables: identificadores de alumno, colegio y cur
 ###################################################
 ##Estudio formación ciudadana
 merge_civic_simce$sexo <- rec(merge_civic_simce$sexo, rec="M=1; F=0")
-merge_civic_simce$sexo <-factor(merge_civic_simce$sexo, levels = c(0,1), labels = c("Mujer", "Hombre"))
+merge_civic_simce$sexo <- factor(merge_civic_simce$sexo, levels = c(0,1), labels = c("Mujer", "Hombre"))
 
 ##SIMCE
 merge_civic_simce$sexo2 <- rec(merge_civic_simce$gen_alu, rec="Hombres=1; Mujeres=0")
-merge_civic_simce$sexo2 <-factor(merge_civic_simce$sexo2, levels = c(0,1), labels = c("Mujer", "Hombre"))
+merge_civic_simce$sexo2 <- factor(merge_civic_simce$sexo2, levels = c(0,1), labels = c("Mujer", "Hombre"))
 
-table(merge_civic_simce$sexo, merge_civic_simce$sexo2) #Inconsistencias, se opta por conservar los datos de SIMCE. 
+table(merge_civic_simce$sexo, merge_civic_simce$sexo2) #Inconsistencias (85 casos que son identificados de forma distinta entre bases), se opta por conservar los datos de SIMCE. 
 
 ###################################################
 # Puntaje en la prueba de conocimiento categórico #
 ###################################################
 #Continuo
-merge_civic_simce$puntaje<- as.numeric(merge_civic_simce$puntaje)
+merge_civic_simce$puntaje <- as.numeric(merge_civic_simce$puntaje)
 #Categórico
 merge_civic_simce$puntajec <- merge_civic_simce$puntaje
 #25% inferior de la distribución
@@ -136,50 +135,176 @@ merge_civic_simce$ptje_lect8b_aluc <-factor(merge_civic_simce$ptje_lect8b_aluc, 
 #Puntaje z
 merge_civic_simce$ptje_lect8b_alucz <- scale(merge_civic_simce$ptje_lect8b_alu)
 
+```
+
+
+## Información de escuela: 
+
+Identificador de establecimiento, región, comuna, tipo de colegio en cinco y tres categorías, puntaje promedio del establecimiento en lectura y matemáticas. 
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
+###################################################
+# Tipo de colegio. 5 categorías:  #
+# 1. Municipal corporación, 2. Municipal DAEM, 3. Particular subvencionado#
+# 4. Particular pagado, 5. Corporación de administración delegada
+###################################################
+
+
+
+###################################################
+# Tipo de colegio. 3 categorías:  #
+# 1. Municipal, 2. Particular subvencionado, 3. Particular pagado#
+###################################################
+
+
+
+###################################################
+# Tipo de colegio. GSE:  #
+# 1. Bajo, 2. Medio-bajo, 3. Medio, 4. Medio-alto, 5. Alto
+###################################################
+
+
+```
+
+
+## Variables de interés socialización política
+
+Interés político, autoeficacia, confianza en las instituciones, atributos del buen ciudadano, ideas autoritarias y valoración de la democracia.
+
+```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
 ###################################################
 # Interés Político #
 ###################################################
-#¿Cuánto te interesas por temas políticas y sociales? 1. Nada, 2. Poco, 3. Bastante, 4. Mucho
+#¿Cuánto te interesas por temas políticas y sociales? 
+#1. Nada, 2. Poco, 3. Bastante, 4. Mucho
 #Continua
-merge_civic_simce$pol_estud <- as.numeric(merge_civic_simce$alp16)
+merge_civic_simce$pol_int <- as.numeric(merge_civic_simce$alp16)
 #Categórica ordinal 
-merge_civic_simce$pol_estud_cat <-factor(merge_civic_simce$pol_estud, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
+merge_civic_simce$pol_int_cat <-factor(merge_civic_simce$pol_int, levels = c(1,2,3,4), labels = c("Nada", "Poco", "Bastante", "Mucho"))
 #Dummy
-merge_civic_simce$pol_estud_dum <- rec(merge_civic_simce$pol_estud, rec="1=0; 2=1; 3=1; 4=1")
-merge_civic_simce$pol_estud_dum <-factor(merge_civic_simce$pol_estud_dum, levels = c(0,1), labels = c("No", "Si"))
+merge_civic_simce$pol_int_dum <- rec(merge_civic_simce$pol_int, rec="1=0; 2=1; 3=1; 4=1")
+merge_civic_simce$pol_int_dum <- factor(merge_civic_simce$pol_int_dum, levels = c(0,1), labels = c("No", "Si"))
 
 ###################################################
 # Autoeficacia #
 ###################################################
+# Nivel de preparación para las siguientes actividades (autopercepción)
+#1: Mal, 2: No muy bien, 3: Bastante bien, 4: Muy bien 
+merge_civic_simce$autoefic1 <- as.numeric(merge_civic_simce$alp23_1) #Argumentar
+merge_civic_simce$autoefic2 <- as.numeric(merge_civic_simce$alp23_2) #Hablar en público 
+merge_civic_simce$autoefic3 <- as.numeric(merge_civic_simce$alp23_3) #Organizar a otros
+merge_civic_simce$autoefic4 <- as.numeric(merge_civic_simce$alp23_4) #Candidato a elecciones
+merge_civic_simce$autoefic5 <- as.numeric(merge_civic_simce$alp23_5) #Discutir artículo 
+merge_civic_simce$autoefic6 <- as.numeric(merge_civic_simce$alp23_6) #Seguir un debate TV
+merge_civic_simce$autoefic7 <- as.numeric(merge_civic_simce$alp23_7) #Escribir una carta
 
+#Se codifican missing (categorías 0 y 1)
+merge_civic_simce <- merge_civic_simce %>%
+  mutate_at(vars(163:169), na_if, 99) %>%
+  mutate_at(vars(163:169), na_if, 0)
 
+#Indicador común
+#Asociaciones
+#Correlaciones Policóricas
+cor(merge_civic_simce[,163:169], use="complete.obs")
+psych::alpha(merge_civic_simce[,163:169]) #Alpha de 0.89
+
+###################################################
+# Confianza en las instituciones #
+###################################################
+# Cuánto confía: 1:Nada o muy poco, 2:Algo, 3:Bastante, 4:Mucho
+merge_civic_simce$conf1 <- as.numeric(merge_civic_simce$alp27_1) #Congreso
+merge_civic_simce$conf2 <- as.numeric(merge_civic_simce$alp27_2) #Tribunales
+merge_civic_simce$conf3 <- as.numeric(merge_civic_simce$alp27_3) #Gobierno
+merge_civic_simce$conf4 <- as.numeric(merge_civic_simce$alp27_4) #Partidos Políticos
+merge_civic_simce$conf5 <- as.numeric(merge_civic_simce$alp27_5) #Bancos
+merge_civic_simce$conf6 <- as.numeric(merge_civic_simce$alp27_6) #Empresas privadas
+merge_civic_simce$conf7 <- as.numeric(merge_civic_simce$alp27_7) #Carabineros
+merge_civic_simce$conf8 <- as.numeric(merge_civic_simce$alp27_8) #Fuerzas armadas
+merge_civic_simce$conf9 <- as.numeric(merge_civic_simce$alp27_9) #Sindicatos
+merge_civic_simce$conf10 <- as.numeric(merge_civic_simce$alp27_10) #Radios
+merge_civic_simce$conf11 <- as.numeric(merge_civic_simce$alp27_11) #TV
+merge_civic_simce$conf12 <- as.numeric(merge_civic_simce$alp27_12) #Diarios
+
+#Se codifican missing (categorías 0 y 1)
+merge_civic_simce <- merge_civic_simce %>%
+  mutate_at(vars(170:181), na_if, 99) %>%
+  mutate_at(vars(170:181), na_if, 0)
+
+#Indicador común
+#Asociaciones
+#Correlaciones Policóricas
+cor(merge_civic_simce[,170:181], use="complete.obs")
+psych::alpha(merge_civic_simce[,170:181]) #Alpha de 0.91
+
+###################################################
+# Atributos del buen ciudadano #
+###################################################
+#¿Qué tan importantes son los siguientes comportamientos para que una persona adulta sea un “buen” ciudadano?: 1:Sin ninguna importancia, 2: No muy importante, 3: Importante, 4:Muy importante
+merge_civic_simce$gcitizen1 <- as.numeric(merge_civic_simce$alp36_1) #Votar elecciones
+merge_civic_simce$gcitizen2 <- as.numeric(merge_civic_simce$alp36_2) #Unirse a un partido
+merge_civic_simce$gcitizen3 <- as.numeric(merge_civic_simce$alp36_3) #Aprender historia
+merge_civic_simce$gcitizen4 <- as.numeric(merge_civic_simce$alp36_4) #Estar informado
+merge_civic_simce$gcitizen5 <- as.numeric(merge_civic_simce$alp36_5) #Respeto autoridad
+merge_civic_simce$gcitizen6 <- as.numeric(merge_civic_simce$alp36_6) #Part.Discusiones
+merge_civic_simce$gcitizen7 <- as.numeric(merge_civic_simce$alp36_7) #Protestar
+merge_civic_simce$gcitizen8 <- as.numeric(merge_civic_simce$alp36_8) #Act. a benefic.
+merge_civic_simce$gcitizen9 <- as.numeric(merge_civic_simce$alp36_9) #Act. por DDHH 
+merge_civic_simce$gcitizen10 <- as.numeric(merge_civic_simce$alp36_10) #Act. por medioamb.
+merge_civic_simce$gcitizen11 <- as.numeric(merge_civic_simce$alp36_11) #Trabajar arduam.
+merge_civic_simce$gcitizen12 <- as.numeric(merge_civic_simce$alp36_12) #Obedecer la ley
+merge_civic_simce$gcitizen13 <- as.numeric(merge_civic_simce$alp36_13) #Asegurar bienest. econ.
+merge_civic_simce$gcitizen14 <- as.numeric(merge_civic_simce$alp36_14) #Proteger rec. nat.
+merge_civic_simce$gcitizen15 <- as.numeric(merge_civic_simce$alp36_15) #Respetar otras opiniones
+merge_civic_simce$gcitizen16 <- as.numeric(merge_civic_simce$alp36_16) #Apoyar vulnerables
+merge_civic_simce$gcitizen17 <- as.numeric(merge_civic_simce$alp36_17) #Apoyo otros países
+
+#Codificamos missing
+merge_civic_simce <- merge_civic_simce %>%
+  mutate_at(vars(182:198), na_if, 99) %>%
+  mutate_at(vars(182:198), na_if, 0)
+
+#Indicador común
+#Asociaciones
+#Correlaciones Policóricas
+cor(merge_civic_simce[,182:198], use="complete.obs")
+psych::alpha(merge_civic_simce[,182:198]) #Alpha de 0.93
+
+###################################################
+# Participación Política #
+###################################################
+merge_civic_simce$pol_part1 <- as.numeric(merge_civic_simce$alp17_1)
+merge_civic_simce$pol_part2 <- as.numeric(merge_civic_simce$alp17_2)
+merge_civic_simce$pol_part3 <- as.numeric(merge_civic_simce$alp17_3)
+merge_civic_simce$pol_part4 <- as.numeric(merge_civic_simce$alp17_4)
+merge_civic_simce$pol_part5 <- as.numeric(merge_civic_simce$alp17_5)
+merge_civic_simce$pol_part6 <- as.numeric(merge_civic_simce$alp17_6)
+merge_civic_simce$pol_part7 <- as.numeric(merge_civic_simce$alp17_7)
+merge_civic_simce$pol_part8 <- as.numeric(merge_civic_simce$alp17_8)
+merge_civic_simce$pol_part9 <- as.numeric(merge_civic_simce$alp17_9)
+merge_civic_simce$pol_part10 <- as.numeric(merge_civic_simce$alp17_10)
+
+#Codificamos missing
+merge_civic_simce <- merge_civic_simce %>%
+  mutate_at(vars(182:198), na_if, 99) %>%
+  mutate_at(vars(182:198), na_if, 0)
+
+#Generamos un indicador común 
 
 ###################################################
 # Ideas autoritarias #
 ###################################################
 
 
+
 ###################################################
 # Valoración de la democracia #
 ###################################################
 
-
-
-###################################################
-# Confianza en las instituciones #
-###################################################
-
-
-
-###################################################
-# Atributos del buen ciudadano #
-###################################################
-
-
-
 ```
 
-## Variables para los padres: 
+
+## Variables de interés para los padres
 
 ```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
 
@@ -187,11 +312,9 @@ merge_civic_simce$pol_estud_dum <-factor(merge_civic_simce$pol_estud_dum, levels
 
 ```
 
-## Variables escuela 
+## Variables de caracterización socioeconómica
 
 ```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
-
-
 
 ```
 
@@ -200,6 +323,16 @@ merge_civic_simce$pol_estud_dum <-factor(merge_civic_simce$pol_estud_dum, levels
 ```{r, warning=FALSE, cache=FALSE, include=FALSE, results="asis", echo=TRUE}
 
 
+
+```
+
+
+
+```{r}
+#table <- merge_civic_simce %>% 
+#  group_by(merge_civic_simce$int_politico_dum) %>% 
+#  summarize(n=n()) %>% 
+#  mutate(prop=n/sum(n)*100)
 
 ```
 
